@@ -61,5 +61,18 @@ async getUserByEmail(emailUser: string){
     }
 }
 
+// update user data
+async updateUserData(id: string, data: any){
+    try {
+         await this.userRepository.update({id:id},data);
+        
+    } catch (error) {
+        Logger.log('error=> ', error);
+        throw error;
+    }
+  }
+
+
+
 
 }
