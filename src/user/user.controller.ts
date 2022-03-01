@@ -12,7 +12,7 @@ export class UserController {
 
     // update user Data
     @Put('updateUser/:id')
-    async updateUser(@Body() body: UserDto, @Param() id: string, @Res() res: Response ){
+    async updateUser(@Body() body: UserDto, @Param() id: number, @Res() res: Response ){
         try {
            const userId = await this.userService.getUser(id);
            if(!userId){
@@ -36,7 +36,7 @@ export class UserController {
 
     // delete user
     @Delete('deleteUser/:id')
-    async deleteUserById(@Res() res: Response, @Param() id: string){
+    async deleteUserById(@Res() res: Response, @Param() id: number){
         try {
             const userId = await this.userService.getUser(id);
             if(!userId){
@@ -54,13 +54,12 @@ export class UserController {
 
     // get user by ID
     @Get('getOneUser/:id')
-    async getOneUserById(@Res() res: Response, @Param() id: string){
+    async getOneUserById(@Res() res: Response, @Param() id: number){
         try {
-            const userId = await this.userService.getUser(id);
-            if(!userId){
+            const user = await this.userService.getUser(id);
+            if(!user){
                 throw 'User is not found';
             } 
-            const user = await this.userService.getUser(id);
             return res.status(HttpStatus.OK).json(user);
         } catch (error) {
             throw new UnprocessableEntityException(error);
@@ -91,5 +90,6 @@ export class UserController {
             throw new UnprocessableEntityException(error);
         }
     }
+    
 
 }

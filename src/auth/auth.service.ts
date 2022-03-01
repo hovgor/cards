@@ -14,7 +14,7 @@ export class AuthService{
 
 
     // login 
-    async login(email: string){
+    async loginAndJwt(email: string){
         try {
             const paylod = {email};
             return {

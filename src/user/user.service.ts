@@ -21,7 +21,7 @@ export class UserService{
 }
 
 // get user by id
-async getUser(id: string){
+async getUser(id: number){
     try {
         return await this.userRepository.findOne(id);
     } catch (error) {
@@ -29,6 +29,17 @@ async getUser(id: string){
         throw error;
     }
 }
+
+// get user by query
+async getUserByQuery(query: any){
+    try {
+        return await this.userRepository.findOne(query);
+    } catch (error) {
+        Logger.log('error=> ',error);
+        throw error;
+    }
+}
+
 
 // get all users
 async getAllUsers(){
@@ -41,7 +52,7 @@ async getAllUsers(){
 }
 
 // delete user by id
-async deleteUser(id: string){
+async deleteUser(id: number){
     try {
         await this.userRepository.delete(id);
     } catch (error) {
@@ -50,19 +61,8 @@ async deleteUser(id: string){
     }
 }
 
-// get by email 
-async getUserByEmail(emailUser: string){
-    try {
-        const userEmail = await this.userRepository.findOne({email:emailUser})
-        return userEmail;
-    } catch (error) {
-        Logger.log('error=> ', error);
-        throw error;
-    }
-}
-
 // update user data
-async updateUserData(id: string, data: any){
+async updateUserData(id: number, data: any){
     try {
          await this.userRepository.update({id:id},data);
         
