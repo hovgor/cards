@@ -2,9 +2,11 @@ import { Body, Controller, HttpCode, HttpStatus, Post, Res, UnprocessableEntityE
 import { Response } from 'express';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
+import { jwtConstants } from './constants';
 import { AuthDto } from './dto/authDto';
 import { RegisterDto } from './dto/registerDto';
 const sha1: any = require('sha1');
+const cron: any = require('node-cron');
 
 @Controller('auth')
 export class AuthController {
@@ -16,7 +18,7 @@ export class AuthController {
     @Post('login')
     async login(@Res() res: Response, @Body() body: AuthDto ){
         try {
-            const verifayEmail = await this.userService.getUserByQuery({email: body.email.toLowerCase()});
+            let verifayEmail = await this.userService.getUserByQuery({email: body.email.toLowerCase()});
            
             if(!verifayEmail){
                 throw "user with this email does not exists" ;
@@ -25,8 +27,19 @@ export class AuthController {
             if(sha1(body.password) !== verifayEmail.password){
                 throw " email or password not found !!! \n pleas lets try agen ";
             }
-            const loginVerify = await this.authService.loginAndJwt(body.email.toLowerCase());
-            return res.status(HttpStatus.OK).json(loginVerify);
+            let accessToken = await this.authService.loginAndJwt(body.email.toLowerCase(),jwtConstants.expiresIn);
+           
+            cron.schedule(`*/2 * * * *`, ()=>{
+            const newAccessToken =  this.authService.loginAndJwt(body.email.toLowerCase(),jwtConstants.expiresIn);
+            console.log(newAccessToken)
+            return newAccessToken;
+            })
+            let refreshToken = await this.authService.loginAndJwt(body.email.toLocaleLowerCase(),jwtConstants.expiresIn); 
+            
+            return res.status(HttpStatus.OK).json({
+                "accessToken":accessToken,
+                "refreshToken": refreshToken    
+        });
         } catch (error) {
             throw new UnprocessableEntityException(error);
         }

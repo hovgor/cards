@@ -14,11 +14,13 @@ export class AuthService{
 
 
     // login 
-    async loginAndJwt(email: string){
+    async loginAndJwt(email: string, experationTime: string){
         try {
             const paylod = {email};
             return {
-               accessToken: await this.jwtService.signAsync(paylod)
+               accessToken: await this.jwtService.signAsync(paylod,{
+                expiresIn: `${experationTime}s`
+               })
             }
         } catch (error) {
             Logger.log('error=> ',error);
